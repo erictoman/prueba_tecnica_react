@@ -1,25 +1,26 @@
 import React from "react";
-import FormularioModal from "./Formulariomodal";
+import FormularioModal from "./ModalFormulario";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import {
   List,
   ListItem,
-  ListItemText,
   ListItemIcon,
-  IconButton,
   Fab,
+  Typography,
   Hidden,
   ListItemSecondaryAction,
 } from "@material-ui/core";
 import RootRef from "@material-ui/core/RootRef";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
-import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
 import contexto from "../Contexto/contexto";
+import InformacionIconos from "./InformacionIconos";
+import SortIcon from "@material-ui/icons/Sort";
+import ModalFiltro from "./ModalFiltro";
 
-const style = {
+const styleDerecha = {
   margin: 0,
   top: "auto",
   right: 20,
@@ -28,13 +29,26 @@ const style = {
   position: "fixed",
 };
 
+const styleIZquierda = {
+  margin: 0,
+  top: "auto",
+  right: "auto",
+  bottom: 20,
+  left: 20,
+  position: "fixed",
+};
+
 export default function ListaTareas() {
-  const { items, setItems, setModal } = React.useContext(contexto);
+  const {
+    items,
+    setItems,
+    setModal,
+    setModalFiltro,
+    tipoFiltro,
+  } = React.useContext(contexto);
 
   const reorder = (a, b) => {
-    var aux = items[a];
-    items[a] = items[b];
-    items[b] = aux;
+    items.splice(b, 0, items.splice(a, 1)[0]);
     return items;
   };
 
@@ -53,7 +67,10 @@ export default function ListaTareas() {
   };
 
   return (
-    <div>
+    <div style={{ marginBottom: 50 }}>
+      <Typography variant="h6" noWrap>
+        Tareas
+      </Typography>
       <Grid
         justify="space-between" // Add it here :)
         container
@@ -71,45 +88,264 @@ export default function ListaTareas() {
             </Button>
           </Hidden>
         </Grid>
+        <Grid item>
+          <Hidden xsDown implementation="css">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setModal(true);
+              }}
+            >
+              Filtrar tareas
+            </Button>
+          </Hidden>
+        </Grid>
         <Grid item xs={12}>
           <DragDropContext onDragEnd={(drag) => onDragEnd(drag)}>
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List>
-                    {items.map((item, index) => (
-                      <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <ListItem
-                            ContainerComponent="li"
-                            ContainerProps={{ ref: provided.innerRef }}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={getItemStyle(
-                              snapshot.isDragging,
-                              provided.draggableProps.style
-                            )}
+                    {items.map((item, index) => {
+                      if (tipoFiltro === "A") {
+                        return (
+                          <Draggable
+                            key={item.id}
+                            draggableId={item.id}
+                            index={index}
                           >
-                            <ListItemIcon>
-                              <DragIndicatorIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={item.primary}
-                              secondary={item.secondary}
-                            />
-                            <ListItemSecondaryAction>
-                              <IconButton>
-                                <EditIcon />
-                              </IconButton>
-                            </ListItemSecondaryAction>
-                          </ListItem>
-                        )}
-                      </Draggable>
-                    ))}
+                            {(provided, snapshot) => (
+                              <ListItem
+                                divider
+                                ContainerComponent="li"
+                                ContainerProps={{ ref: provided.innerRef }}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <ListItemIcon>
+                                  <DragIndicatorIcon />
+                                </ListItemIcon>
+                                <Grid container>
+                                  <Grid item xs={4}>
+                                    <Typography
+                                      component={"span"}
+                                      variant="body1"
+                                      color={
+                                        item.activo === true
+                                          ? "secondary"
+                                          : "primary"
+                                      }
+                                    >
+                                      {item.titulo}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={6}>
+                                    <Typography
+                                      component={"span"}
+                                      variant="body1"
+                                      color="textPrimary"
+                                      align="justify"
+                                    >
+                                      {item.actual +
+                                        "/" +
+                                        item.minutos +
+                                        " Minutos"}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                                <ListItemSecondaryAction>
+                                  <InformacionIconos index={index} />
+                                </ListItemSecondaryAction>
+                              </ListItem>
+                            )}
+                          </Draggable>
+                        );
+                      }
+                      if (tipoFiltro === "B" && item.minutos <= 30) {
+                        return (
+                          <Draggable
+                            key={item.id}
+                            draggableId={item.id}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <ListItem
+                                divider
+                                ContainerComponent="li"
+                                ContainerProps={{ ref: provided.innerRef }}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <ListItemIcon>
+                                  <DragIndicatorIcon />
+                                </ListItemIcon>
+                                <Grid container>
+                                  <Grid item xs={4}>
+                                    <Typography
+                                      component={"span"}
+                                      variant="body1"
+                                      color={
+                                        item.activo === true
+                                          ? "secondary"
+                                          : "primary"
+                                      }
+                                    >
+                                      {item.titulo}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={6}>
+                                    <Typography
+                                      component={"span"}
+                                      variant="body1"
+                                      color="textPrimary"
+                                      align="justify"
+                                    >
+                                      {item.actual +
+                                        "/" +
+                                        item.minutos +
+                                        " Minutos"}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                                <ListItemSecondaryAction>
+                                  <InformacionIconos index={index} />
+                                </ListItemSecondaryAction>
+                              </ListItem>
+                            )}
+                          </Draggable>
+                        );
+                      }
+                      if (
+                        tipoFiltro === "C" &&
+                        item.minutos > 30 &&
+                        item.minutos <= 60
+                      ) {
+                        return (
+                          <Draggable
+                            key={item.id}
+                            draggableId={item.id}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <ListItem
+                                divider
+                                ContainerComponent="li"
+                                ContainerProps={{ ref: provided.innerRef }}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <ListItemIcon>
+                                  <DragIndicatorIcon />
+                                </ListItemIcon>
+                                <Grid container>
+                                  <Grid item xs={4}>
+                                    <Typography
+                                      component={"span"}
+                                      variant="body1"
+                                      color={
+                                        item.activo === true
+                                          ? "secondary"
+                                          : "primary"
+                                      }
+                                    >
+                                      {item.titulo}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={6}>
+                                    <Typography
+                                      component={"span"}
+                                      variant="body1"
+                                      color="textPrimary"
+                                      align="justify"
+                                    >
+                                      {item.actual +
+                                        "/" +
+                                        item.minutos +
+                                        " Minutos"}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                                <ListItemSecondaryAction>
+                                  <InformacionIconos index={index} />
+                                </ListItemSecondaryAction>
+                              </ListItem>
+                            )}
+                          </Draggable>
+                        );
+                      }
+                      if (tipoFiltro === "D" && item.minutos > 60) {
+                        return (
+                          <Draggable
+                            key={item.id}
+                            draggableId={item.id}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <ListItem
+                                divider
+                                ContainerComponent="li"
+                                ContainerProps={{ ref: provided.innerRef }}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <ListItemIcon>
+                                  <DragIndicatorIcon />
+                                </ListItemIcon>
+                                <Grid container>
+                                  <Grid item xs={4}>
+                                    <Typography
+                                      component={"span"}
+                                      variant="body1"
+                                      color={
+                                        item.activo === true
+                                          ? "secondary"
+                                          : "primary"
+                                      }
+                                    >
+                                      {item.titulo}
+                                    </Typography>
+                                  </Grid>
+                                  <Grid item xs={6}>
+                                    <Typography
+                                      component={"span"}
+                                      variant="body1"
+                                      color="textPrimary"
+                                      align="justify"
+                                    >
+                                      {item.actual +
+                                        "/" +
+                                        item.minutos +
+                                        " Minutos"}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                                <ListItemSecondaryAction>
+                                  <InformacionIconos index={index} />
+                                </ListItemSecondaryAction>
+                              </ListItem>
+                            )}
+                          </Draggable>
+                        );
+                      }
+                      return null;
+                    })}
                     {provided.placeholder}
                   </List>
                 </RootRef>
@@ -119,9 +355,10 @@ export default function ListaTareas() {
         </Grid>
       </Grid>
       <FormularioModal />
+      <ModalFiltro />
       <Hidden smUp implementation="css">
         <Fab
-          style={style}
+          style={styleDerecha}
           color="primary"
           onClick={() => {
             setModal(true);
@@ -129,6 +366,16 @@ export default function ListaTareas() {
           aria-label="add"
         >
           <AddIcon />
+        </Fab>
+        <Fab
+          style={styleIZquierda}
+          color="primary"
+          onClick={() => {
+            setModalFiltro(true);
+          }}
+          aria-label="add"
+        >
+          <SortIcon />
         </Fab>
       </Hidden>
     </div>
