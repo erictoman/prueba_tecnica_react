@@ -92,7 +92,7 @@ export default function DrawerResponsive() {
           <ListItemIcon>
             <DonutLargeIcon />
           </ListItemIcon>
-          <ListItemText>Estadisticas</ListItemText>
+          <ListItemText>Graficas</ListItemText>
         </ListItem>
         <ListItem
           divider

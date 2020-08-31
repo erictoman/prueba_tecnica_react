@@ -117,6 +117,11 @@ export default function ListaTareas() {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List>
+                    {items.length == 0 && (
+                      <Typography variant="h6" noWrap>
+                        No hay tareas pendientes
+                      </Typography>
+                    )}
                     {items.map((item, index) => {
                       if (tipoFiltro === "A") {
                         return (

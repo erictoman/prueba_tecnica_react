@@ -7,6 +7,7 @@ import BarraSuperior from "./Componentes/BarraSuperior";
 import ListaTareas from "./Componentes/ListaTareas";
 import ListaTareasTerminadas from "./Componentes/ListaTareasTerminadas";
 import ModalDescripcion from "./Componentes/ModalDescripcion";
+import Graficas from "./Componentes/Graficas";
 
 export default function ResponsiveDrawer() {
   const classes = estilos.drawer();
@@ -55,7 +56,7 @@ export default function ResponsiveDrawer() {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           {pantalla === "Tareas" && <ListaTareas />}
-          {pantalla === "Estadisticas"}
+          {pantalla === "Estadisticas" && <Graficas />}
           {pantalla === "Historial" && <ListaTareasTerminadas />}
         </main>
       </div>

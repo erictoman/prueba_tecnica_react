@@ -33,6 +33,11 @@ export default function ListaTareasTerminadas() {
       <Grid justify="space-between" container>
         <Grid item xs={12}>
           <List>
+            {itemsTerminados.length == 0 && (
+              <Typography variant="h6" noWrap>
+                No hay tareas terminadas
+              </Typography>
+            )}
             {itemsTerminados.map((item, index) => (
               <ListItem divider key={index}>
                 <ListItemIcon>
