@@ -15,6 +15,16 @@ export default function ListaTareasTerminadas() {
   const { itemsTerminados, setModalDesc, setModalDescTexto } = React.useContext(
     contexto
   );
+  //Convertir los segundos a Hora:Minuto:Segundo
+  const tiempoMinHorasSegundos = (actual) => {
+    return (
+      parseInt(actual / 3600, 10) +
+      ":" +
+      parseInt(actual / 60, 10) +
+      ":" +
+      parseInt(actual % 60, 10)
+    );
+  };
   return (
     <div>
       <Typography variant="h6" noWrap>
@@ -45,7 +55,9 @@ export default function ListaTareasTerminadas() {
                       color="textPrimary"
                       align="justify"
                     >
-                      {item.actual + "/" + item.minutos + " Minutos"}
+                      {tiempoMinHorasSegundos(item.tiempo - item.actual) +
+                        "/" +
+                        tiempoMinHorasSegundos(item.tiempo)}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -53,7 +65,10 @@ export default function ListaTareasTerminadas() {
                   <VisibilityIcon
                     onClick={() => {
                       setModalDesc(true);
-                      setModalDescTexto(item.descripcion);
+                      setModalDescTexto({
+                        texto: item.descripcion,
+                        fecha: item.fecha,
+                      });
                     }}
                   />
                 </ListItemSecondaryAction>

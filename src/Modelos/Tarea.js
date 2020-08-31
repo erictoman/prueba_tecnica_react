@@ -3,8 +3,8 @@ export default class Tarea {
     this.id = id;
     this.titulo = titulo;
     this.descripcion = desc;
-    this.minutos = min;
-    this.actual = actual;
+    this.tiempo = min;
+    this.actual = min;
     this.activo = false;
     this.fecha = new Date();
   }

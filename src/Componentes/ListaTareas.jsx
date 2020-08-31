@@ -59,6 +59,16 @@ export default function ListaTareas() {
     }),
   });
 
+  const tiempoMinHorasSegundos = (item) => {
+    return (
+      parseInt(item.actual / 3600, 10) +
+      ":" +
+      parseInt((item.actual / 60) % 60, 10) +
+      ":" +
+      parseInt(item.actual % 60, 10)
+    );
+  };
+
   const onDragEnd = (result) => {
     if (!result.destination) {
       return;
@@ -151,10 +161,7 @@ export default function ListaTareas() {
                                       color="textPrimary"
                                       align="justify"
                                     >
-                                      {item.actual +
-                                        "/" +
-                                        item.minutos +
-                                        " Minutos"}
+                                      {tiempoMinHorasSegundos(item)}
                                     </Typography>
                                   </Grid>
                                 </Grid>
@@ -166,7 +173,7 @@ export default function ListaTareas() {
                           </Draggable>
                         );
                       }
-                      if (tipoFiltro === "B" && item.minutos <= 30) {
+                      if (tipoFiltro === "B" && item.tiempo <= 30 * 60) {
                         return (
                           <Draggable
                             key={item.id}
@@ -209,10 +216,7 @@ export default function ListaTareas() {
                                       color="textPrimary"
                                       align="justify"
                                     >
-                                      {item.actual +
-                                        "/" +
-                                        item.minutos +
-                                        " Minutos"}
+                                      {tiempoMinHorasSegundos(item)}
                                     </Typography>
                                   </Grid>
                                 </Grid>
@@ -226,8 +230,8 @@ export default function ListaTareas() {
                       }
                       if (
                         tipoFiltro === "C" &&
-                        item.minutos > 30 &&
-                        item.minutos <= 60
+                        item.tiempo > 30 * 60 &&
+                        item.tiempo <= 60 * 60
                       ) {
                         return (
                           <Draggable
@@ -271,10 +275,7 @@ export default function ListaTareas() {
                                       color="textPrimary"
                                       align="justify"
                                     >
-                                      {item.actual +
-                                        "/" +
-                                        item.minutos +
-                                        " Minutos"}
+                                      {tiempoMinHorasSegundos(item)}
                                     </Typography>
                                   </Grid>
                                 </Grid>
@@ -286,7 +287,7 @@ export default function ListaTareas() {
                           </Draggable>
                         );
                       }
-                      if (tipoFiltro === "D" && item.minutos > 60) {
+                      if (tipoFiltro === "D" && item.tiempo > 60 * 60) {
                         return (
                           <Draggable
                             key={item.id}
@@ -329,10 +330,7 @@ export default function ListaTareas() {
                                       color="textPrimary"
                                       align="justify"
                                     >
-                                      {item.actual +
-                                        "/" +
-                                        item.minutos +
-                                        " Minutos"}
+                                      {tiempoMinHorasSegundos(item)}
                                     </Typography>
                                   </Grid>
                                 </Grid>

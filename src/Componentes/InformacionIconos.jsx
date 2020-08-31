@@ -7,6 +7,7 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import DoneIcon from "@material-ui/icons/Done";
 import contexto from "../Contexto/contexto";
+import RotateLeftIcon from "@material-ui/icons/RotateLeft";
 
 import {
   ListItemIcon,
@@ -37,12 +38,13 @@ export default function InformacionIconos(props) {
     if (contador) {
       var timer = setTimeout(() => {
         var temp = [...items];
-        if (contador < 1 + items[props.index].minutos) {
-          temp[props.index].actual = contador;
+        if (contador !== 1) {
+          temp[props.index].actual = contador - 1;
           temp.splice(0, 0, temp.splice(props.index, 1)[0]);
-          setContador(contador + 1);
+          setContador(contador - 1);
         } else {
           var auxitem = temp.splice(props.index, 1)[0];
+          auxitem.actual = auxitem.actual - 1;
           setContadorActivo(false);
           temp[props.index].activo = false;
           detenerContador();
@@ -65,7 +67,7 @@ export default function InformacionIconos(props) {
   ]);
   //Inicio contador
   const iniciarContador = (num) => {
-    setContador(num + 1);
+    setContador(num);
   };
   //Detener contador
   const detenerContador = () => setContador(0);
@@ -100,7 +102,7 @@ export default function InformacionIconos(props) {
             onClick={() => {
               if (!contadorActivo) {
                 setContadorActivo(true);
-                iniciarContador(items[props.index].actual);
+                iniciarContador(items[props.index].tiempo);
                 var temp = [...items];
                 temp[props.index].activo = true;
                 setItems(temp);
@@ -134,11 +136,28 @@ export default function InformacionIconos(props) {
             <ListItemText primary="Pausar" />
           </MenuItem>
         )}
-
+        <MenuItem
+          onClick={() => {
+            if (!contadorActivo) {
+              var temp = [...items];
+              temp[props.index].actual = temp[props.index].tiempo;
+              setItems(temp);
+              setOpen(false);
+            }
+          }}
+        >
+          <ListItemIcon>
+            <RotateLeftIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Reiniciar" />
+        </MenuItem>
         <MenuItem
           onClick={() => {
             setModalDesc(true);
-            setModalDescTexto(items[props.index].descripcion);
+            setModalDescTexto({
+              texto: items[props.index].descripcion,
+              fecha: items[props.index].fecha,
+            });
             setOpen(false);
           }}
         >
@@ -147,6 +166,7 @@ export default function InformacionIconos(props) {
           </ListItemIcon>
           <ListItemText primary="Ver descripcion" />
         </MenuItem>
+
         <MenuItem
           onClick={() => {
             setOpen(false);

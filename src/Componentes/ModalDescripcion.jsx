@@ -17,6 +17,14 @@ export default function ModalDescripcion() {
     setModalDesc(false);
   };
 
+  const getFecha = (fecha) => {
+    if (fecha !== undefined) {
+      return fecha.toLocaleDateString("de-DE");
+    } else {
+      return "";
+    }
+  };
+
   return (
     <Dialog
       open={modalDesc}
@@ -26,10 +34,12 @@ export default function ModalDescripcion() {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{"Descripcion"}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">
+        {"Descripcion | Fecha:" + getFecha(modalDescTexto.fecha)}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {modalDescTexto}
+          {modalDescTexto.texto}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

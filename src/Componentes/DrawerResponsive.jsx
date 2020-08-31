@@ -1,3 +1,4 @@
+//Librerias
 import React from "react";
 import Drawer from "@material-ui/core/Drawer";
 import Hidden from "@material-ui/core/Hidden";
@@ -13,7 +14,10 @@ import contexto from "../Contexto/contexto";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import Tarea from "../Modelos/Tarea";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
+
+//Componente
 export default function DrawerResponsive() {
+  //Cadena de longitud n
   const randomText = (length) => {
     var result = "";
     var caracteres =
@@ -25,14 +29,21 @@ export default function DrawerResponsive() {
     }
     return result;
   };
-
+  //Numero random en rango
   const numeroRandonRango = (a, b) => {
     return Math.floor(Math.random() * (b - a)) + a;
   };
+  //Fecha randon en un rango
+  const randomDate = (start, end) => {
+    return new Date(
+      start.getTime() + Math.random() * (end.getTime() - start.getTime())
+    );
+  };
 
+  //Tareas random
   const getItems = (n) => {
     return Array.from({ length: n }, (v, k) => k).map((k) => {
-      var random = numeroRandonRango(1, 120);
+      var random = numeroRandonRango(1, 60 * 60 * 2);
       var obj = new Tarea(
         `Tarea${contadorTareas + k + 1}`,
         `Tarea ${contadorTareas + k + 1}`,
@@ -40,10 +51,11 @@ export default function DrawerResponsive() {
         random,
         numeroRandonRango(Math.floor(random * 0.8), random)
       );
+      obj.fecha = randomDate(new Date("2020-01-01"), new Date());
       return obj;
     });
   };
-
+  //Estilos
   const theme = useTheme();
   const classes = estilos.drawer();
   const {
