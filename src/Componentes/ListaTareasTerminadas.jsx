@@ -20,11 +20,21 @@ export default function ListaTareasTerminadas() {
     return (
       parseInt(actual / 3600, 10) +
       ":" +
-      parseInt(actual / 60, 10) +
+      parseInt((actual / 60) % 60, 10) +
       ":" +
       parseInt(actual % 60, 10)
     );
   };
+
+  const getFecha = (f) => {
+    if (f !== undefined) {
+      f = new Date(f);
+      return f.toLocaleDateString("de-DE");
+    } else {
+      return "";
+    }
+  };
+
   return (
     <div>
       <Typography variant="h6" noWrap>
@@ -33,7 +43,7 @@ export default function ListaTareasTerminadas() {
       <Grid justify="space-between" container>
         <Grid item xs={12}>
           <List>
-            {itemsTerminados.length == 0 && (
+            {itemsTerminados.length === 0 && (
               <Typography variant="h6" noWrap>
                 No hay tareas terminadas
               </Typography>
@@ -48,22 +58,37 @@ export default function ListaTareasTerminadas() {
                     <Typography
                       component={"span"}
                       variant="body1"
-                      color="textPrimary"
+                      color={item.activo === true ? "secondary" : "primary"}
                     >
                       {item.titulo}
                     </Typography>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography
-                      component={"span"}
-                      variant="body1"
-                      color="textPrimary"
-                      align="justify"
-                    >
-                      {tiempoMinHorasSegundos(item.tiempo - item.actual) +
-                        "/" +
-                        tiempoMinHorasSegundos(item.tiempo)}
-                    </Typography>
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <Typography
+                        component={"span"}
+                        variant="body1"
+                        color="textPrimary"
+                        align="justify"
+                      >
+                        {"Tiempo: " +
+                          tiempoMinHorasSegundos(item.tiempo - item.actual) +
+                          " de " +
+                          tiempoMinHorasSegundos(item.tiempo)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <Typography
+                        component={"span"}
+                        variant="body1"
+                        color="textPrimary"
+                        align="justify"
+                      >
+                        {"Fecha: " + getFecha(item.fecha)}
+                      </Typography>
+                    </Grid>
                   </Grid>
                 </Grid>
                 <ListItemSecondaryAction>

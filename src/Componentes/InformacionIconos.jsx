@@ -28,9 +28,10 @@ export default function InformacionIconos(props) {
     setModalDesc,
     setModalDescTexto,
   } = React.useContext(contexto);
-
+  //Estados del toltip
   const [anchorEl, setOpen] = React.useState(null);
   const open = Boolean(anchorEl);
+  //Estado del contador
   const [contador, setContador] = React.useState(0);
 
   //Comtador
@@ -65,6 +66,7 @@ export default function InformacionIconos(props) {
     itemsTerminados,
     setItemsTerminados,
   ]);
+
   //Inicio contador
   const iniciarContador = (num) => {
     setContador(num);
@@ -102,7 +104,7 @@ export default function InformacionIconos(props) {
             onClick={() => {
               if (!contadorActivo) {
                 setContadorActivo(true);
-                iniciarContador(items[props.index].tiempo);
+                iniciarContador(items[props.index].actual);
                 var temp = [...items];
                 temp[props.index].activo = true;
                 setItems(temp);
@@ -192,14 +194,16 @@ export default function InformacionIconos(props) {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            var temp = [...items];
-            var auxitem = temp.splice(props.index, 1)[0];
-            setItems(temp);
-            detenerContador();
-            var aux = [...itemsTerminados];
-            aux.push(auxitem);
-            setItemsTerminados(aux);
-            setOpen(false);
+            if (!contadorActivo) {
+              var temp = [...items];
+              var auxitem = temp.splice(props.index, 1)[0];
+              setItems(temp);
+              detenerContador();
+              var aux = [...itemsTerminados];
+              aux.push(auxitem);
+              setItemsTerminados(aux);
+              setOpen(false);
+            }
           }}
         >
           <ListItemIcon>

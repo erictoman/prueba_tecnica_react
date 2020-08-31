@@ -12,8 +12,10 @@ import {
 } from "@material-ui/core";
 import contexto from "../Contexto/contexto";
 export default function ModalFiltro() {
+  //COntexto
   const { modalFiltro, setModalFiltro } = React.useContext(contexto);
   const { tipoFiltro, setTipoFiltro } = React.useContext(contexto);
+  //Cerrar modal filtro
   const cerrar = () => {
     setModalFiltro(false);
   };

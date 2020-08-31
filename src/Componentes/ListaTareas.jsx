@@ -2,6 +2,7 @@ import React from "react";
 import FormularioModal from "./ModalFormulario";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import {
   List,
   ListItem,
@@ -19,7 +20,7 @@ import contexto from "../Contexto/contexto";
 import InformacionIconos from "./InformacionIconos";
 import SortIcon from "@material-ui/icons/Sort";
 import ModalFiltro from "./ModalFiltro";
-
+//Estilo boton derecho
 const styleDerecha = {
   margin: 0,
   top: "auto",
@@ -28,7 +29,7 @@ const styleDerecha = {
   left: "auto",
   position: "fixed",
 };
-
+//Estilo boton izquierdo
 const styleIZquierda = {
   margin: 0,
   top: "auto",
@@ -37,43 +38,130 @@ const styleIZquierda = {
   left: 20,
   position: "fixed",
 };
-
-export default function ListaTareas() {
+//Componente lista de tareas
+export default function ListaTareas(props) {
   const {
     items,
     setItems,
     setModal,
     setModalFiltro,
     tipoFiltro,
+    setModalDesc,
+    setModalDescTexto,
   } = React.useContext(contexto);
-
+  //Reordena el arreglo de tareas
   const reorder = (a, b) => {
     items.splice(b, 0, items.splice(a, 1)[0]);
     return items;
   };
-
+  //Estilos de los items
   const getItemStyle = (isDragging, draggableStyle) => ({
     ...draggableStyle,
     ...(isDragging && {
       background: "rgb(235,235,235)",
     }),
   });
-
-  const tiempoMinHorasSegundos = (item) => {
+  //Segundos a horas, min, segs
+  const tiempoMinHorasSegundos = (actual) => {
     return (
-      parseInt(item.actual / 3600, 10) +
+      parseInt(actual / 3600, 10) +
       ":" +
-      parseInt((item.actual / 60) % 60, 10) +
+      parseInt((actual / 60) % 60, 10) +
       ":" +
-      parseInt(item.actual % 60, 10)
+      parseInt(actual % 60, 10)
     );
   };
-
+  //Evento drag
   const onDragEnd = (result) => {
     if (!result.destination) {
       return;
     }
     setItems(reorder(result.source.index, result.destination.index));
+  };
+  //Elemento de la lista
+  const elemLista = (item, index) => {
+    return (
+      <Draggable key={item.id} draggableId={item.id} index={index}>
+        {(provided, snapshot) => (
+          <ListItem
+            divider
+            ContainerComponent="li"
+            ContainerProps={{ ref: provided.innerRef }}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            style={getItemStyle(
+              snapshot.isDragging,
+              provided.draggableProps.style
+            )}
+          >
+            <ListItemIcon>
+              <DragIndicatorIcon />
+            </ListItemIcon>
+            <Grid container>
+              <Grid item xs={6}>
+                <Typography
+                  component={"span"}
+                  variant="body1"
+                  color={item.activo === true ? "secondary" : "primary"}
+                >
+                  {item.titulo}
+                </Typography>
+              </Grid>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Typography
+                    component={"span"}
+                    variant="body1"
+                    color="textPrimary"
+                    align="justify"
+                  >
+                    {"Tiempo: " +
+                      tiempoMinHorasSegundos(item.tiempo - item.actual) +
+                      " de " +
+                      tiempoMinHorasSegundos(item.tiempo)}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Typography
+                    component={"span"}
+                    variant="body1"
+                    color="textPrimary"
+                    align="justify"
+                  >
+                    {"Fecha: " + getFecha(item.fecha)}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <ListItemSecondaryAction>
+              {props.activado && <InformacionIconos index={index} />}
+              {!props.activado && (
+                <VisibilityIcon
+                  onClick={() => {
+                    setModalDesc(true);
+                    setModalDescTexto({
+                      texto: item.descripcion,
+                      fecha: item.fecha,
+                    });
+                  }}
+                />
+              )}
+            </ListItemSecondaryAction>
+          </ListItem>
+        )}
+      </Draggable>
+    );
+  };
+  //Obtener fecha
+  const getFecha = (f) => {
+    if (f !== undefined) {
+      f = new Date(f);
+      return f.toLocaleDateString("de-DE");
+    } else {
+      return "";
+    }
   };
 
   return (
@@ -87,15 +175,17 @@ export default function ListaTareas() {
       >
         <Grid item>
           <Hidden xsDown implementation="css">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Agregar tarea
-            </Button>
+            {props.activado && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setModal(true);
+                }}
+              >
+                Agregar tarea
+              </Button>
+            )}
           </Hidden>
         </Grid>
         <Grid item>
@@ -104,7 +194,7 @@ export default function ListaTareas() {
               variant="contained"
               color="primary"
               onClick={() => {
-                setModal(true);
+                setModalFiltro(true);
               }}
             >
               Filtrar tareas
@@ -117,235 +207,25 @@ export default function ListaTareas() {
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List>
-                    {items.length == 0 && (
+                    {props.tareas.length === 0 && (
                       <Typography variant="h6" noWrap>
-                        No hay tareas pendientes
+                        {props.activado && "No hay tareas pendientes"}
+                        {!props.activado && "No hay tareas terminadas"}
                       </Typography>
                     )}
-                    {items.map((item, index) => {
+                    {props.tareas.map((item, index) => {
                       if (tipoFiltro === "A") {
-                        return (
-                          <Draggable
-                            key={item.id}
-                            draggableId={item.id}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <ListItem
-                                divider
-                                ContainerComponent="li"
-                                ContainerProps={{ ref: provided.innerRef }}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                              >
-                                <ListItemIcon>
-                                  <DragIndicatorIcon />
-                                </ListItemIcon>
-                                <Grid container>
-                                  <Grid item xs={4}>
-                                    <Typography
-                                      component={"span"}
-                                      variant="body1"
-                                      color={
-                                        item.activo === true
-                                          ? "secondary"
-                                          : "primary"
-                                      }
-                                    >
-                                      {item.titulo}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={6}>
-                                    <Typography
-                                      component={"span"}
-                                      variant="body1"
-                                      color="textPrimary"
-                                      align="justify"
-                                    >
-                                      {tiempoMinHorasSegundos(item)}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <ListItemSecondaryAction>
-                                  <InformacionIconos index={index} />
-                                </ListItemSecondaryAction>
-                              </ListItem>
-                            )}
-                          </Draggable>
-                        );
-                      }
-                      if (tipoFiltro === "B" && item.tiempo <= 30 * 60) {
-                        return (
-                          <Draggable
-                            key={item.id}
-                            draggableId={item.id}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <ListItem
-                                divider
-                                ContainerComponent="li"
-                                ContainerProps={{ ref: provided.innerRef }}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                              >
-                                <ListItemIcon>
-                                  <DragIndicatorIcon />
-                                </ListItemIcon>
-                                <Grid container>
-                                  <Grid item xs={4}>
-                                    <Typography
-                                      component={"span"}
-                                      variant="body1"
-                                      color={
-                                        item.activo === true
-                                          ? "secondary"
-                                          : "primary"
-                                      }
-                                    >
-                                      {item.titulo}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={6}>
-                                    <Typography
-                                      component={"span"}
-                                      variant="body1"
-                                      color="textPrimary"
-                                      align="justify"
-                                    >
-                                      {tiempoMinHorasSegundos(item)}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <ListItemSecondaryAction>
-                                  <InformacionIconos index={index} />
-                                </ListItemSecondaryAction>
-                              </ListItem>
-                            )}
-                          </Draggable>
-                        );
+                        return elemLista(item, index);
                       }
                       if (
                         tipoFiltro === "C" &&
                         item.tiempo > 30 * 60 &&
                         item.tiempo <= 60 * 60
                       ) {
-                        return (
-                          <Draggable
-                            key={item.id}
-                            draggableId={item.id}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <ListItem
-                                divider
-                                ContainerComponent="li"
-                                ContainerProps={{ ref: provided.innerRef }}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                              >
-                                <ListItemIcon>
-                                  <DragIndicatorIcon />
-                                </ListItemIcon>
-                                <Grid container>
-                                  <Grid item xs={4}>
-                                    <Typography
-                                      component={"span"}
-                                      variant="body1"
-                                      color={
-                                        item.activo === true
-                                          ? "secondary"
-                                          : "primary"
-                                      }
-                                    >
-                                      {item.titulo}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={6}>
-                                    <Typography
-                                      component={"span"}
-                                      variant="body1"
-                                      color="textPrimary"
-                                      align="justify"
-                                    >
-                                      {tiempoMinHorasSegundos(item)}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <ListItemSecondaryAction>
-                                  <InformacionIconos index={index} />
-                                </ListItemSecondaryAction>
-                              </ListItem>
-                            )}
-                          </Draggable>
-                        );
+                        return elemLista(item, index);
                       }
                       if (tipoFiltro === "D" && item.tiempo > 60 * 60) {
-                        return (
-                          <Draggable
-                            key={item.id}
-                            draggableId={item.id}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <ListItem
-                                divider
-                                ContainerComponent="li"
-                                ContainerProps={{ ref: provided.innerRef }}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                              >
-                                <ListItemIcon>
-                                  <DragIndicatorIcon />
-                                </ListItemIcon>
-                                <Grid container>
-                                  <Grid item xs={4}>
-                                    <Typography
-                                      component={"span"}
-                                      variant="body1"
-                                      color={
-                                        item.activo === true
-                                          ? "secondary"
-                                          : "primary"
-                                      }
-                                    >
-                                      {item.titulo}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={6}>
-                                    <Typography
-                                      component={"span"}
-                                      variant="body1"
-                                      color="textPrimary"
-                                      align="justify"
-                                    >
-                                      {tiempoMinHorasSegundos(item)}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                                <ListItemSecondaryAction>
-                                  <InformacionIconos index={index} />
-                                </ListItemSecondaryAction>
-                              </ListItem>
-                            )}
-                          </Draggable>
-                        );
+                        return elemLista(item, index);
                       }
                       return null;
                     })}

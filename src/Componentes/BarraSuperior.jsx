@@ -8,8 +8,10 @@ import estilos from "../EstilosApp";
 import contexto from "../Contexto/contexto";
 
 export default function Barra() {
+  //Cambio responsive de la barra
   const { setMobileOpen } = React.useContext(contexto);
   const classes = estilos.drawer();
+  //Se cambia a mobile
   const cambiosDrawer = () => {
     setMobileOpen(true);
   };

@@ -14,6 +14,7 @@ import contexto from "../Contexto/contexto";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import Tarea from "../Modelos/Tarea";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import moment from "moment";
 
 //Componente
 export default function DrawerResponsive() {
@@ -51,7 +52,7 @@ export default function DrawerResponsive() {
         random,
         numeroRandonRango(Math.floor(random * 0.8), random)
       );
-      obj.fecha = randomDate(new Date("2020-01-01"), new Date());
+      obj.fecha = randomDate(moment().startOf("week").toDate(), new Date());
       return obj;
     });
   };

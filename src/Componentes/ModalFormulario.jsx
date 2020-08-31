@@ -17,7 +17,7 @@ import {
 import contexto from "../Contexto/contexto";
 import Tarea from "../Modelos/Tarea";
 import { makeStyles } from "@material-ui/core/styles";
-
+//Estilos de la tarea
 const useStyles = makeStyles((theme) => ({
   typography: {
     padding: theme.spacing(2),
@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function FormularioModal() {
+  //Datos de la tarea
   const {
     modal,
     setModal,
@@ -34,23 +35,23 @@ export default function FormularioModal() {
     contadorTareas,
     setContadorTareas,
   } = React.useContext(contexto);
-
+  //Estados de la tarea (Hooks)
   const [tipo, setTipo] = React.useState(true);
   const [min, setMin] = React.useState(30 * 60);
   const [sec, setSec] = React.useState(30);
   const [desc, setDesc] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [target, setTarget] = React.useState(null);
-
+  //Cerrar popover
   const handleClose = () => {
     setOpen(false);
     setTarget(null);
   };
-
+  //Cerrar modal
   const cerrar = () => {
     setModal(false);
   };
-
+  //Cerrar popover
   const id = open ? "simple-popover" : undefined;
   const classes = useStyles();
   return (

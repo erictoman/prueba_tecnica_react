@@ -5,7 +5,6 @@ import estilos from "./EstilosApp";
 import { ProveedorContexto } from "./Contexto/contexto";
 import BarraSuperior from "./Componentes/BarraSuperior";
 import ListaTareas from "./Componentes/ListaTareas";
-import ListaTareasTerminadas from "./Componentes/ListaTareasTerminadas";
 import ModalDescripcion from "./Componentes/ModalDescripcion";
 import Graficas from "./Componentes/Graficas";
 
@@ -22,8 +21,7 @@ export default function ResponsiveDrawer() {
   const [modalDescTexto, setModalDescTexto] = React.useState("");
   const [modalFiltro, setModalFiltro] = React.useState(false);
   const [tipoFiltro, setTipoFiltro] = React.useState("A");
-
-  const value = {
+  var value = {
     mobileOpen,
     setMobileOpen,
     pantalla,
@@ -48,6 +46,27 @@ export default function ResponsiveDrawer() {
     setTipoFiltro,
   };
 
+  //Al cargar
+  window.addEventListener("load", (e) => {
+    var contexto = localStorage.getItem("contexto");
+    //Cargar contexto
+    if (contexto !== null) {
+      contexto = JSON.parse(contexto);
+      setItems(contexto.items);
+      setItemsTerminados(contexto.itemsTerminados);
+      setContadorTareas(contexto.contadorTareas);
+    }
+  });
+
+  //Antes de salir
+  window.addEventListener("beforeunload", (e) => {
+    if (value.contadorActivo) {
+      value.items[0].activo = 0;
+    }
+    //Guardar contexto
+    localStorage.setItem("contexto", JSON.stringify(value));
+  });
+
   return (
     <ProveedorContexto value={value}>
       <div className={classes.root}>
@@ -55,9 +74,13 @@ export default function ResponsiveDrawer() {
         <DrawerResponsive />
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          {pantalla === "Tareas" && <ListaTareas />}
+          {pantalla === "Tareas" && (
+            <ListaTareas activado={true} tareas={items} />
+          )}
           {pantalla === "Estadisticas" && <Graficas />}
-          {pantalla === "Historial" && <ListaTareasTerminadas />}
+          {pantalla === "Historial" && (
+            <ListaTareas activado={false} tareas={itemsTerminados} />
+          )}
         </main>
       </div>
       <ModalDescripcion />
